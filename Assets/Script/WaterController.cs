@@ -10,7 +10,7 @@ public class WaterController : MonoBehaviour
     [SerializeField, Range(0.001f, 0.01f)] public float UpSpeed;
     [SerializeField, Range(0.001f, 0.01f)] public float DownSpeed;
     
-    private WheelScript.Mode wheelMode;
+    private Mode wheelMode;
 
     private void Awake()
     {
@@ -20,14 +20,14 @@ public class WaterController : MonoBehaviour
     private void Update()
     {
         wheelMode = wheel.GetComponent<WheelScript>().CurrentMode;
-        if (wheelMode == WheelScript.Mode.Rain)
+        if (wheelMode == Mode.Rain)
         {
             if (Input.GetMouseButton(0))
             {
                 gameObject.transform.position += new Vector3(0, UpSpeed);
             }
         }
-        else if(wheelMode == WheelScript.Mode.Sun)
+        else if(wheelMode == Mode.Sun)
         {
             if (Input.GetMouseButton(0))
                 gameObject.transform.position -= new Vector3(0, DownSpeed);
@@ -37,7 +37,7 @@ public class WaterController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("Hello");
-        if (collision.gameObject == boat && wheelMode == WheelScript.Mode.Rain)
+        if (collision.gameObject == boat && wheelMode == Mode.Rain)
         {
             boat.transform.parent = gameObject.transform;
         }
@@ -45,7 +45,7 @@ public class WaterController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject == boat || wheelMode == WheelScript.Mode.Sun)
+        if (collision.gameObject == boat || wheelMode == Mode.Sun)
         {
             boat.transform.parent = null;
         }

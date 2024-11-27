@@ -6,6 +6,12 @@ public class Goal : MonoBehaviour
 {
     [SerializeField] private GameObject Timer;
     [SerializeField] private GameObject NextButton;
+    private GameObject GameManager;
+
+    private void Awake()
+    {
+        GameManager = GameObject.FindGameObjectWithTag("GameController");
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,7 +28,7 @@ public class Goal : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         Timer.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        Timer.GetComponent<Timer>().enabled = false;
+        GameManager.GetComponent<Timer>().enabled = false;
         Timer.GetComponent<TextMeshProUGUI>().text = "You Win!";
         NextButton.SetActive(true);
     }

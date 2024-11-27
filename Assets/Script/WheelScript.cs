@@ -1,16 +1,31 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WheelScript : MonoBehaviour
 {
-    public enum Mode
-    {
-        Rain,
-        Wind,
-        Sun
-    }
-    public Mode CurrentMode;
+    [NonSerialized] public Mode CurrentMode;
+    private int CurrentModeIndex;
+    [SerializeField] public GameObject GameManager;
+    private List<Mode> lockModes = new List<Mode>();
+    private WeatherController wc;
 
+    private void Awake()
+    {
+        wc = GameManager.GetComponent<WeatherController>();
+        if (wc.Rain)
+            lockModes.Add(Mode.Rain);
+        if(wc.Sun)
+            lockModes.Add(Mode.Sun);
+        if (wc.Wind)
+            lockModes.Add(Mode.Wind);
+        if (!lockModes.Any())
+        {
+            Debug.LogError("NO MODE IS ENABLED! ENABLE AT LEAST ONE!");
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,25 +36,26 @@ public class WheelScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(CurrentModeIndex);
         if (Input.GetAxis("Mouse ScrollWheel") > 0f || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if ((int)CurrentMode < 2)
+            CurrentModeIndex++;
+            if (CurrentModeIndex > lockModes.Count - 1)
             {
-                CurrentMode = (Mode)((int)CurrentMode + 1);
+                CurrentModeIndex = 0;
             }
-            else if ((int)CurrentMode == 2)
-            {
-                CurrentMode = (Mode)((int) CurrentMode - 2);
-            }
-            Console.WriteLine(CurrentMode);
+            CurrentMode = lockModes[CurrentModeIndex];
+            Debug.Log(CurrentMode);
         } 
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if ((int)CurrentMode > 0) { CurrentMode = (Mode)((int)CurrentMode - 1); }
-            else
+            CurrentModeIndex--;
+            if (CurrentModeIndex == -1)
             {
-                CurrentMode = Mode.Sun;
+                CurrentModeIndex = lockModes.Count - 1;
             }
+            CurrentMode = lockModes[CurrentModeIndex];
+            Debug.Log(CurrentMode);
         }
         RotationManager(CurrentMode);
     }
@@ -53,4 +69,11 @@ public class WheelScript : MonoBehaviour
         else
             gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
     }
+}
+[Serializable]
+public enum Mode : int
+{
+    Rain = 0,
+    Sun = 1,
+    Wind = 2
 }

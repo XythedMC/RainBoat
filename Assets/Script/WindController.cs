@@ -6,7 +6,7 @@ public class WindController : MonoBehaviour
     [SerializeField] public GameObject wheel;
     [SerializeField, Range(0, 8)] public float WindSpeed;
 
-    public WheelScript.Mode mode;
+    public Mode mode;
 
     private void Awake()
     {
@@ -22,7 +22,7 @@ public class WindController : MonoBehaviour
     void Update()
     {
         mode = wheel.GetComponent<WheelScript>().CurrentMode;
-        if (mode == WheelScript.Mode.Wind)
+        if (mode == Mode.Wind)
         {
             if (Input.GetMouseButton(0))
             {
