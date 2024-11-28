@@ -3,75 +3,79 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class WheelScript : MonoBehaviour
 {
     [NonSerialized] public Mode CurrentMode;
-    private int CurrentModeIndex;
-    [SerializeField] public GameObject GameManager;
-    private List<Mode> lockModes = new List<Mode>();
-    private WeatherController wc;
+    private int _currentModeIndex;
+    [FormerlySerializedAs("GameManager")] [SerializeField] public GameObject gameManager;
+    private readonly List<Mode> _lockModes = new List<Mode>();
+    private WeatherController _wc;
 
     private void Awake()
     {
-        wc = GameManager.GetComponent<WeatherController>();
-        if (wc.Rain)
-            lockModes.Add(Mode.Rain);
-        if(wc.Sun)
-            lockModes.Add(Mode.Sun);
-        if (wc.Wind)
-            lockModes.Add(Mode.Wind);
-        if (!lockModes.Any())
+        _wc = gameManager.GetComponent<WeatherController>();
+        if (_wc.rain)
+            _lockModes.Add(Mode.Rain);
+        if(_wc.sun)
+            _lockModes.Add(Mode.Sun);
+        if (_wc.wind)
+            _lockModes.Add(Mode.Wind);
+        if (!_lockModes.Any())
         {
             Debug.LogError("NO MODE IS ENABLED! ENABLE AT LEAST ONE!");
         }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         RotationManager(CurrentMode);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Debug.Log(CurrentModeIndex);
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f || Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            CurrentModeIndex++;
-            if (CurrentModeIndex > lockModes.Count - 1)
+            _currentModeIndex++;
+            if (_currentModeIndex > _lockModes.Count - 1)
             {
-                CurrentModeIndex = 0;
+                _currentModeIndex = 0;
             }
-            CurrentMode = lockModes[CurrentModeIndex];
-            Debug.Log(CurrentMode);
+            CurrentMode = _lockModes[_currentModeIndex];
         } 
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f || Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetAxis("Mouse ScrollWheel") > 0f || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            CurrentModeIndex--;
-            if (CurrentModeIndex == -1)
+            _currentModeIndex--;
+            if (_currentModeIndex == -1)
             {
-                CurrentModeIndex = lockModes.Count - 1;
+                _currentModeIndex = _lockModes.Count - 1;
             }
-            CurrentMode = lockModes[CurrentModeIndex];
-            Debug.Log(CurrentMode);
+            CurrentMode = _lockModes[_currentModeIndex];
         }
         RotationManager(CurrentMode);
     }
 
-    public void RotationManager(Mode mode)
+    private void RotationManager(Mode mode)
     {
-        if (mode == Mode.Rain)
-            gameObject.transform.eulerAngles = new Vector3(0,0,250);
-        else if (mode == Mode.Sun)
-            gameObject.transform.eulerAngles = new Vector3(0, 0, 114);
-        else
-            gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+        switch (mode)
+        {
+            case Mode.Rain:
+                gameObject.transform.eulerAngles = new Vector3(0,0,240);
+                break;
+            case Mode.Sun:
+                gameObject.transform.eulerAngles = new Vector3(0, 0, 120);
+                break;
+            default:
+                gameObject.transform.eulerAngles = new Vector3(0, 0, 0);
+                break;
+        }
     }
 }
 [Serializable]
-public enum Mode : int
+public enum Mode
 {
     Rain = 0,
     Sun = 1,

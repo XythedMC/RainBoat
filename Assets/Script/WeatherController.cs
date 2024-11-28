@@ -1,64 +1,79 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 public class WeatherController : MonoBehaviour
 {
-    [SerializeField] public GameObject Boat;
+    [Header("Object References")]
+    [SerializeField] public GameObject boat;
     [SerializeField] public GameObject wheel;
-    [SerializeField, Range(0, 8)] public float WindSpeed;
-    [SerializeField, Range(1f, 10f)] public float WaterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
-    [SerializeField, Range(1f, 10f)] public float WaterDownSpeed;
+    [SerializeField] public GameObject water;
+    
+    [Header("Values")]
+    [FormerlySerializedAs("WindSpeed")] [SerializeField, Range(0, 8)] public float windSpeed;
+    [FormerlySerializedAs("WaterUpSpeed")] [SerializeField, Range(1f, 10f)] public float waterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
+    [FormerlySerializedAs("WaterDownSpeed")] [SerializeField, Range(1f, 10f)] public float waterDownSpeed;
 
     [Header("Locked Modes")]
-    [SerializeField] public bool Rain;
-    [SerializeField] public bool Sun;
-    [SerializeField] public bool Wind;
+    [SerializeField] public bool rain;
+    [SerializeField] public bool sun;
+    [SerializeField] public bool wind;
 
     
-    private Mode mode;
-
+    private Mode _mode;
+    private WheelScript _wheelScript;
+    private Rigidbody2D _rb2dBoat;
 
     private void Awake()
     {
-        mode = wheel.GetComponent<WheelScript>().CurrentMode;
+        _wheelScript = wheel.GetComponent<WheelScript>();
+        _mode = _wheelScript.CurrentMode;
+        _rb2dBoat = boat.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
     {
-        mode = wheel.GetComponent<WheelScript>().CurrentMode;
-        WaterControl(mode);
-        WindControl(mode);
+        _mode = _wheelScript.CurrentMode;
+        WaterControl(_mode);
+        WindControl(_mode);
     }
 
-    public void WindControl(Mode curMode)
+    // ReSharper disable Unity.PerformanceAnalysis
+    private void WindControl(Mode curMode)
     {
-        if (curMode == Mode.Wind)
+        if (curMode != Mode.Wind) return;
+        if (Input.GetMouseButton(0))
         {
-            if (Input.GetMouseButton(0))
-            {
-                Boat.GetComponent<Rigidbody2D>().AddForceX(WindSpeed);
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                Boat.GetComponent<Rigidbody2D>().AddForceX(-WindSpeed);
-            }
+            _rb2dBoat.AddForceX(windSpeed);
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            _rb2dBoat.AddForceX(-windSpeed);
         }
     }
 
-    public void WaterControl(Mode curMode)
+    private void WaterControl(Mode curMode)
     {
-        if (curMode == Mode.Rain)
+        switch (curMode)
         {
-            if (Input.GetMouseButton(0))
+            case Mode.Rain:
             {
-                gameObject.transform.position += new Vector3(0, WaterUpSpeed / 1000);
+                if (Input.GetMouseButton(0))
+                {
+                    if (water.transform.position.y < -1f)
+                        water.transform.position += new Vector3(0, waterUpSpeed / 1000);
+                }
+
+                break;
             }
-        }
-        else if (curMode == Mode.Sun)
-        {
-            if (Input.GetMouseButton(0))
-                gameObject.transform.position -= new Vector3(0, WaterDownSpeed / 1000);
+            case Mode.Sun:
+            {
+                if (Input.GetMouseButton(0))
+                    if (water.transform.position.y > -10f)
+                        water.transform.position -= new Vector3(0, waterDownSpeed / 1000);
+                break;
+            }
         }
     }
 }

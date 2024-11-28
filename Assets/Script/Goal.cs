@@ -5,7 +5,9 @@ using UnityEngine;
 public class Goal : MonoBehaviour
 {
     [SerializeField] private GameObject Timer;
+    [SerializeField] private GameObject winText;
     [SerializeField] private GameObject NextButton;
+    [SerializeField] private GameObject ReplayButton;
     private GameObject GameManager;
 
     private void Awake()
@@ -13,23 +15,13 @@ public class Goal : MonoBehaviour
         GameManager = GameObject.FindGameObjectWithTag("GameController");
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Timer.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         GameManager.GetComponent<Timer>().enabled = false;
-        Timer.GetComponent<TextMeshProUGUI>().text = "You Win!";
+        Timer.SetActive(false);
+        winText.SetActive(true);
+        winText.GetComponent<TextMeshProUGUI>().text = "You Win!";
         NextButton.SetActive(true);
+        ReplayButton.SetActive(true);
     }
 }
