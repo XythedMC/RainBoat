@@ -10,7 +10,7 @@ public class WheelScript : MonoBehaviour
     [NonSerialized] public Mode CurrentMode;
     private int _currentModeIndex;
     [FormerlySerializedAs("GameManager")] [SerializeField] public GameObject gameManager;
-    private readonly List<Mode> _lockModes = new List<Mode>();
+    private readonly List<Mode> _lockModes = new();
     private WeatherController _wc;
 
     private void Awake()
@@ -26,11 +26,13 @@ public class WheelScript : MonoBehaviour
         {
             Debug.LogError("NO MODE IS ENABLED! ENABLE AT LEAST ONE!");
         }
+        
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        CurrentMode = _lockModes[0];
         RotationManager(CurrentMode);
     }
 
