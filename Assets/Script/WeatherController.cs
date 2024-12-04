@@ -11,9 +11,9 @@ public class WeatherController : MonoBehaviour
     [SerializeField] public GameObject water;
     
     [Header("Values")]
-    [FormerlySerializedAs("WindSpeed")] [SerializeField, Range(0, 8)] public float windSpeed;
-    [FormerlySerializedAs("WaterUpSpeed")] [SerializeField, Range(1f, 10f)] public float waterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
-    [FormerlySerializedAs("WaterDownSpeed")] [SerializeField, Range(1f, 10f)] public float waterDownSpeed;
+    [SerializeField, Range(0, 1)] public float windSpeed;
+    [SerializeField, Range(1f, 10f)] public float waterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
+    [SerializeField, Range(1f, 10f)] public float waterDownSpeed;
 
     [Header("Locked Modes")]
     [SerializeField] public bool rain;
@@ -25,31 +25,32 @@ public class WeatherController : MonoBehaviour
     private WheelScript _wheelScript;
     private Rigidbody2D _rb2dBoat;
 
-    private void Awake()
+    private void Start()
     {
         _wheelScript = wheel.GetComponent<WheelScript>();
         _mode = _wheelScript.CurrentMode;
         _rb2dBoat = boat.GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         _mode = _wheelScript.CurrentMode;
         WaterControl(_mode);
         WindControl(_mode);
     }
 
-    // ReSharper disable Unity.PerformanceAnalysis
     private void WindControl(Mode curMode)
     {
         if (curMode != Mode.Wind) return;
         if (Input.GetMouseButton(0))
         {
-            _rb2dBoat.AddForceX(windSpeed);
+            Debug.Log("Click");
+            _rb2dBoat.AddForceX(windSpeed, ForceMode2D.Impulse);
         }
         else if (Input.GetMouseButton(1))
         {
-            _rb2dBoat.AddForceX(-windSpeed);
+            Debug.Log("Click");
+            _rb2dBoat.AddForceX(-windSpeed, ForceMode2D.Impulse);
         }
     }
 
@@ -62,7 +63,7 @@ public class WeatherController : MonoBehaviour
                 if (Input.GetMouseButton(0))
                 {
                     if (water.transform.position.y < -1f)
-                        water.transform.position += new Vector3(0, waterUpSpeed / 1000);
+                        water.transform.position += new Vector3(0, waterUpSpeed / 100);
                 }
 
                 break;
@@ -71,9 +72,11 @@ public class WeatherController : MonoBehaviour
             {
                 if (Input.GetMouseButton(0))
                     if (water.transform.position.y > -10f)
-                        water.transform.position -= new Vector3(0, waterDownSpeed / 1000);
+                        water.transform.position -= new Vector3(0, waterDownSpeed / 100);
                 break;
             }
+            case Mode.Wind:
+                return;
         }
     }
 }

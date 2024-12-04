@@ -1375,7 +1375,6 @@ GameObject:
   m_Component:
   - component: {fileID: 823608584}
   - component: {fileID: 823608581}
-  - component: {fileID: 823608583}
   - component: {fileID: 823608582}
   m_Layer: 0
   m_Name: Camera Sharp
@@ -1479,14 +1478,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &823608583
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 823608580}
-  m_Enabled: 1
 --- !u!4 &823608584
 Transform:
   m_ObjectHideFlags: 0
@@ -1775,7 +1766,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1186581488}
   - component: {fileID: 1186581485}
-  - component: {fileID: 1186581487}
   - component: {fileID: 1186581486}
   m_Layer: 7
   m_Name: Camera Blur
@@ -1879,14 +1869,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!81 &1186581487
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1186581484}
-  m_Enabled: 1
 --- !u!4 &1186581488
 Transform:
   m_ObjectHideFlags: 0
@@ -2144,7 +2126,7 @@ MonoBehaviour:
   boat: {fileID: 1621180489}
   wheel: {fileID: 888206582}
   water: {fileID: 341138503}
-  windSpeed: 3.06
+  windSpeed: 1
   waterUpSpeed: 5.09
   waterDownSpeed: 5.32
   rain: 1
