@@ -2245,11 +2245,11 @@ MonoBehaviour:
   boat: {fileID: 1621180489}
   wheel: {fileID: 888206582}
   water: {fileID: 341138503}
-  windSpeed: 3.06
+  windSpeed: 2.02
   waterUpSpeed: 6.96
   waterDownSpeed: 5.32
   rain: 0
-  sun: 0
+  sun: 1
   wind: 1
 --- !u!1 &1621180489
 GameObject:
