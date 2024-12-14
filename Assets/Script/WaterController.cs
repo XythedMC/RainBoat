@@ -20,7 +20,7 @@ public class WaterCollisionTracker : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject == boat || wheel.GetComponent<WheelScript>().CurrentMode == Mode.Sun)
+        if (collision.gameObject == boat && wheel.GetComponent<WheelScript>().CurrentMode == Mode.Sun)
         {
             boat.transform.parent = null;
         }

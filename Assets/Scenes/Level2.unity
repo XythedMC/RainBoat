@@ -2164,6 +2164,7 @@ GameObject:
   - component: {fileID: 1396895747}
   - component: {fileID: 1396895748}
   - component: {fileID: 1396895749}
+  - component: {fileID: 1396895750}
   m_Layer: 7
   m_Name: GameManager
   m_TagString: GameController
@@ -2227,12 +2228,25 @@ MonoBehaviour:
   boat: {fileID: 1621180489}
   wheel: {fileID: 888206582}
   water: {fileID: 341138503}
-  windSpeed: 3.06
+  windSpeed: 0.61
   waterUpSpeed: 6.96
   waterDownSpeed: 5.32
   rain: 0
   sun: 0
   wind: 1
+--- !u!114 &1396895750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396895743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94173f86c9ab47c1b3adf18db7ea7820, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pInput: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!1 &1621180489
 GameObject:
   m_ObjectHideFlags: 0
@@ -2338,7 +2352,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 2.07
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 72fd8353d8b041e4d9e39a88bb90d463, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
