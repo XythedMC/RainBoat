@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b5bcf30466437634c8bb447191069624
+guid: 826d869c5c045d845ab8fc7e45c81b55
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3836954968553550457
-    second: sky_0
+      213: -1522481860021745038
+    second: StoneWall1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -126,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sky_0
+      name: StoneWall1_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 7
         y: 0
-        width: 3000
-        height: 2000
+        width: 577
+        height: 2236
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 972fdcff63a9f3530800000000000000
-      internalID: 3836954968553550457
+      spriteID: 27a8d6490de0fdae0800000000000000
+      internalID: -1522481860021745038
       vertices: []
       indices: 
       edges: []
@@ -152,7 +152,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sky_0: 3836954968553550457
+      StoneWall1_0: -1522481860021745038
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
