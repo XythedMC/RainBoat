@@ -11,7 +11,6 @@ public class WaterCollisionTracker : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Hello");
         if (collision.gameObject == boat && wheel.GetComponent<WheelScript>().CurrentMode == Mode.Rain)
         {
             boat.transform.parent = gameObject.transform;

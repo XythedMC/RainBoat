@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
+using System;
 
 public class WeatherController : MonoBehaviour
 {
@@ -63,7 +64,7 @@ public class WeatherController : MonoBehaviour
             {
                 if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
                 {
-                    if (water.transform.position.y < -1f)
+                    if (water.transform.position.y < -1f && CanGoHigher(boat))
                         water.transform.position += new Vector3(0, FindWaterUpSpeed());
                 }
                 break;
@@ -78,6 +79,17 @@ public class WeatherController : MonoBehaviour
             case Mode.Wind:
                 return;
         }
+    }
+
+    private bool CanGoHigher(GameObject boat)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(boat.transform.position, Vector2.up);
+        if (hit)
+        {
+            Debug.Log(true);
+            return true; 
+        }
+        return false;
     }
 
     private float FindWaterUpSpeed()
