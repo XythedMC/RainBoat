@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 using System;
+using UnityEngine.UIElements;
 
 public class WeatherController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class WeatherController : MonoBehaviour
     [SerializeField] public GameObject boat;
     [SerializeField] public GameObject wheel;
     [SerializeField] public GameObject water;
+    [SerializeField] public List<GameObject> objectsToBlur;
     
     [Header("Values")]
     [SerializeField, Range(0, 1)] public float windSpeed;
@@ -37,6 +39,7 @@ public class WeatherController : MonoBehaviour
         _mode = _wheelScript.CurrentMode;
         WaterControl(_mode);
         WindControl(_mode);
+        CanGoHigher();
     }
 
     private void WindControl(Mode curMode)
@@ -56,17 +59,17 @@ public class WeatherController : MonoBehaviour
             {
                 if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
                 {
-                    if (water.transform.position.y < -1f && CanGoHigher(boat))
-                        water.transform.position += new Vector3(0, FindWaterUpSpeed());
+                    if (water.transform.position.y < -1f && CanGoHigher())
+                        water.transform.position += new Vector3(0, FindWaterSpeed(waterUpSpeed));
                 }
                 break;
             }
             case Mode.Sun:
             {
-                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Alpha7) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Alpha9) || Input.GetKey(KeyCode.Alpha0))
+                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
                 {
                     if (water.transform.position.y > -10f)
-                        water.transform.position -= new Vector3(0, FindWaterDownSpeed());
+                        water.transform.position -= new Vector3(0, FindWaterSpeed(waterDownSpeed));
                 }
                 break;
             }
@@ -74,35 +77,61 @@ public class WeatherController : MonoBehaviour
                 return;
         }
     }
-
-    private bool CanGoHigher(GameObject boat)
+    
+    private void OnDrawGizmos()
     {
-        RaycastHit2D hit = Physics2D.Raycast(boat.transform.position, Vector2.up);
-        if (hit)
-        {
-            Debug.Log(true);
-            return true; 
-        }
-        return false;
-    }
-
-    private float FindWaterUpSpeed()
-    {
-        if (Input.GetKey(KeyCode.Alpha1)) { return waterUpSpeed / 100 * 0.2f; }
-        else if (Input.GetKey(KeyCode.Alpha2)) { return waterUpSpeed / 100 * 0.4f; }
-        else if (Input.GetKey(KeyCode.Alpha3)) { return waterUpSpeed / 100 * 0.6f; }
-        else if (Input.GetKey(KeyCode.Alpha4)) { return waterUpSpeed / 100 * 0.8f; }
-        else if (Input.GetKey(KeyCode.Alpha5)) { return waterUpSpeed / 100; }
-        return waterUpSpeed / 100;
+        //RaycastHit2D hit;
+        //hit = Physics2D.Raycast(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), Vector2.up, boat.transform.localScale.y / 2 + 0.8f);
+        //Gizmos.DrawLine(boat.transform.position, new Vector3(boat.transform.position.x, boat.transform.localScale.y / 2 + 20f, 0));
+        //Gizmos.DrawLine(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), new Vector3(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.8f, 0));
+        //Gizmos.DrawSphere(hit.transform.position, 0.2f);
+        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + (boat.transform.localScale.y / 2) + 0.5f);
+        Gizmos.DrawSphere(rayOrigin, 0.2f);
     }
     
-    private float FindWaterDownSpeed()
+
+    private bool CanGoHigher()
     {
-        if (Input.GetKey(KeyCode.Alpha6)) { return waterDownSpeed / 100 * 0.2f; }
-        else if (Input.GetKey(KeyCode.Alpha7)) { return waterDownSpeed / 100 * 0.4f; }
-        else if (Input.GetKey(KeyCode.Alpha8)) { return waterDownSpeed / 100 * 0.6f; }
-        else if (Input.GetKey(KeyCode.Alpha9)) { return waterDownSpeed / 100 * 0.8f; }
-        else if (Input.GetKey(KeyCode.Alpha0)) { return waterDownSpeed / 100; }
-        return waterDownSpeed / 100;
+        Debug.Log(boat);
+        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + (boat.transform.localScale.y / 2)+ 0.5f);
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, 0.8f, LayerMask.NameToLayer("Ground"));
+        //Vector3 rayOrigin = boat.transform.position + Vector3.up * 0.8f;
+        //RaycastHit2D hit;
+        //hit = Physics2D.Raycast(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), Vector2.up, boat.transform.localScale.y / 2 + 0.8f, Layer);
+        Debug.Log(hit);
+        try
+        {
+            if (hit)
+            {
+                Debug.Log("hit");
+                Debug.Log(hit.transform.name);
+                return true;
+            }
+            Debug.Log(hit.transform.name);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            return true;
+        }
+        return true;
+    }
+
+    private float FindWaterSpeed(float speed)
+    {
+        if (Input.GetKey(KeyCode.Alpha1)) return speed / 100 * 0.2f;
+        else if (Input.GetKey(KeyCode.Alpha2)) return speed / 100 * 0.4f;
+        else if (Input.GetKey(KeyCode.Alpha3)) return speed / 100 * 0.6f;
+        else if (Input.GetKey(KeyCode.Alpha4)) return speed / 100 * 0.8f;
+        else if (Input.GetKey(KeyCode.Alpha5)) return speed / 100;
+        return speed / 100;
+    }
+
+    public void manageBlur(List<GameObject> objectsToBlur, string blurLayer)
+    {
+        foreach (GameObject obj in objectsToBlur)
+        {
+            obj.layer = LayerMask.NameToLayer(blurLayer);
+        }
     }
 }

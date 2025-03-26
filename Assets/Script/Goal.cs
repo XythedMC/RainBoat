@@ -11,13 +11,15 @@ public class Goal : MonoBehaviour
     [SerializeField] private GameObject NextButton;
     [SerializeField] private GameObject ReplayButton;
     [SerializeField] private GameObject BlurEffect;
-    private GameObject GameManager;
+
+
+    [SerializeField] public GameObject GameManager;
+    [SerializeField] public string layerToBlur;
     private Volume volume;
     private PlayerControlManager pControls;
     
     private void Awake()
     {
-        GameManager = GameObject.FindGameObjectWithTag("GameController");
         pControls = GameManager.GetComponent<PlayerControlManager>();
         volume = BlurEffect.GetComponent<Volume>();
     }
@@ -25,6 +27,7 @@ public class Goal : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         GameManager.GetComponent<Timer>().enabled = false;
+        GameManager.GetComponent<WeatherController>().manageBlur(GameManager.GetComponent<WeatherController>().objectsToBlur, layerToBlur);
         Timer.SetActive(false);
         winText.SetActive(true);
         winText.GetComponent<TextMeshProUGUI>().text = "You Win!";
