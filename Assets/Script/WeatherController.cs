@@ -20,7 +20,6 @@ public class WeatherController : MonoBehaviour
     [SerializeField] public bool rain;
     [SerializeField] public bool sun;
     [SerializeField] public bool wind;
-
     
     private Mode _mode;
     private WheelScript _wheelScript;
@@ -28,7 +27,6 @@ public class WeatherController : MonoBehaviour
 
     private void Start()
     {
-        
         _wheelScript = wheel.GetComponent<WheelScript>();
         _mode = _wheelScript.CurrentMode;
         _rb2dBoat = boat.GetComponent<Rigidbody2D>();
@@ -45,15 +43,9 @@ public class WeatherController : MonoBehaviour
     {
         if (curMode != Mode.Wind) return;
         if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.RightArrow))
-        {
-            Debug.Log("Click");
             _rb2dBoat.AddForceX(windSpeed, ForceMode2D.Impulse);
-        }
         else if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            Debug.Log("Click");
             _rb2dBoat.AddForceX(-windSpeed, ForceMode2D.Impulse);
-        }
     }
 
     private void WaterControl(Mode curMode)
@@ -71,9 +63,11 @@ public class WeatherController : MonoBehaviour
             }
             case Mode.Sun:
             {
-                    if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Alpha7) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Alpha9) || Input.GetKey(KeyCode.Alpha0))
-                        if (water.transform.position.y > -10f)
+                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Alpha7) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Alpha9) || Input.GetKey(KeyCode.Alpha0))
+                {
+                    if (water.transform.position.y > -10f)
                         water.transform.position -= new Vector3(0, FindWaterDownSpeed());
+                }
                 break;
             }
             case Mode.Wind:
