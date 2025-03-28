@@ -39,7 +39,6 @@ public class WeatherController : MonoBehaviour
         _mode = _wheelScript.CurrentMode;
         WaterControl(_mode);
         WindControl(_mode);
-        CanGoHigher();
     }
 
     private void WindControl(Mode curMode)
@@ -78,41 +77,41 @@ public class WeatherController : MonoBehaviour
         }
     }
     
+    /*
     private void OnDrawGizmos()
     {
-        //RaycastHit2D hit;
-        //hit = Physics2D.Raycast(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), Vector2.up, boat.transform.localScale.y / 2 + 0.8f);
-        //Gizmos.DrawLine(boat.transform.position, new Vector3(boat.transform.position.x, boat.transform.localScale.y / 2 + 20f, 0));
-        //Gizmos.DrawLine(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), new Vector3(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.8f, 0));
-        //Gizmos.DrawSphere(hit.transform.position, 0.2f);
-        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + (boat.transform.localScale.y / 2) + 0.5f);
-        Gizmos.DrawSphere(rayOrigin, 0.2f);
-    }
-    
-
-    private bool CanGoHigher()
-    {
-        Debug.Log(boat);
-        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + (boat.transform.localScale.y / 2)+ 0.5f);
-        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, 0.8f, LayerMask.NameToLayer("Ground"));
-        //Vector3 rayOrigin = boat.transform.position + Vector3.up * 0.8f;
-        //RaycastHit2D hit;
-        //hit = Physics2D.Raycast(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), Vector2.up, boat.transform.localScale.y / 2 + 0.8f, Layer);
-        Debug.Log(hit);
+        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.5f);
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, 0.8f, LayerMask.GetMask("Ground"));
+        Debug.Log(hit.transform.name);
+        LayerMask mask = LayerMask.GetMask("Ground");
+        Gizmos.DrawLine(boat.transform.position, new Vector3(boat.transform.position.x, boat.transform.localScale.y / 2 + 20f, 0));
+        Gizmos.DrawLine(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), new Vector3(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.8f, 0));
         try
         {
-            if (hit)
-            {
-                Debug.Log("hit");
-                Debug.Log(hit.transform.name);
-                return true;
-            }
-            Debug.Log(hit.transform.name);
+            Gizmos.DrawSphere(hit.transform.position, 0.2f);
         }
         catch (Exception e)
         {
-            Debug.Log(e);
-            return true;
+            if (e.GetType() != typeof(NullReferenceException))
+                Debug.LogError(e.Message);
+        }
+        Gizmos.DrawSphere(rayOrigin, 0.2f);
+    }
+    */
+
+    private bool CanGoHigher()
+    {
+        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.1f);
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, 0.8f, LayerMask.GetMask("Ground"));
+        try
+        {
+            if (hit)
+                return false;
+        }
+        catch (Exception e)
+        {
+            if (e.GetType() != typeof(NullReferenceException))
+                Debug.LogError(e.Message);
         }
         return true;
     }
@@ -120,10 +119,10 @@ public class WeatherController : MonoBehaviour
     private float FindWaterSpeed(float speed)
     {
         if (Input.GetKey(KeyCode.Alpha1)) return speed / 100 * 0.2f;
-        else if (Input.GetKey(KeyCode.Alpha2)) return speed / 100 * 0.4f;
-        else if (Input.GetKey(KeyCode.Alpha3)) return speed / 100 * 0.6f;
-        else if (Input.GetKey(KeyCode.Alpha4)) return speed / 100 * 0.8f;
-        else if (Input.GetKey(KeyCode.Alpha5)) return speed / 100;
+        if (Input.GetKey(KeyCode.Alpha2)) return speed / 100 * 0.4f;
+        if (Input.GetKey(KeyCode.Alpha3)) return speed / 100 * 0.6f;
+        if (Input.GetKey(KeyCode.Alpha4)) return speed / 100 * 0.8f;
+        if (Input.GetKey(KeyCode.Alpha5)) return speed / 100;
         return speed / 100;
     }
 
