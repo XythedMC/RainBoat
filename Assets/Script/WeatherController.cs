@@ -12,6 +12,10 @@ public class WeatherController : MonoBehaviour
     [SerializeField] public GameObject wheel;
     [SerializeField] public GameObject water;
     [SerializeField] public List<GameObject> objectsToBlur;
+    [SerializeField] private Material rainMat;
+    [SerializeField] private Material dryMat;
+    [SerializeField] private Material windMat;
+    public ParticleSystem ps;
     
     [Header("Values")]
     [SerializeField, Range(0, 1)] public float windSpeed;
@@ -59,7 +63,7 @@ public class WeatherController : MonoBehaviour
                 if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
                 {
                     if (water.transform.position.y < -1f && CanGoHigher())
-                        water.transform.position += new Vector3(0, FindWaterSpeed(waterUpSpeed));
+                        water.transform.position += new Vector3(0, FindWaterSpeed(waterUpSpeed, ps));
                 }
                 break;
             }
@@ -68,7 +72,7 @@ public class WeatherController : MonoBehaviour
                 if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
                 {
                     if (water.transform.position.y > -10f)
-                        water.transform.position -= new Vector3(0, FindWaterSpeed(waterDownSpeed));
+                        water.transform.position -= new Vector3(0, FindWaterSpeed(waterDownSpeed, ps));
                 }
                 break;
             }
@@ -77,28 +81,6 @@ public class WeatherController : MonoBehaviour
         }
     }
     
-    /*
-    private void OnDrawGizmos()
-    {
-        Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.5f);
-        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, 0.8f, LayerMask.GetMask("Ground"));
-        Debug.Log(hit.transform.name);
-        LayerMask mask = LayerMask.GetMask("Ground");
-        Gizmos.DrawLine(boat.transform.position, new Vector3(boat.transform.position.x, boat.transform.localScale.y / 2 + 20f, 0));
-        Gizmos.DrawLine(new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2), new Vector3(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.8f, 0));
-        try
-        {
-            Gizmos.DrawSphere(hit.transform.position, 0.2f);
-        }
-        catch (Exception e)
-        {
-            if (e.GetType() != typeof(NullReferenceException))
-                Debug.LogError(e.Message);
-        }
-        Gizmos.DrawSphere(rayOrigin, 0.2f);
-    }
-    */
-
     private bool CanGoHigher()
     {
         Vector2 rayOrigin = new Vector2(boat.transform.position.x, boat.transform.position.y + boat.transform.localScale.y / 2 + 0.1f);
@@ -116,15 +98,64 @@ public class WeatherController : MonoBehaviour
         return true;
     }
 
-    private float FindWaterSpeed(float speed)
+    private float FindWaterSpeed(float speed, ParticleSystem ps)
     {
-        if (Input.GetKey(KeyCode.Alpha1)) return speed / 100 * 0.2f;
-        if (Input.GetKey(KeyCode.Alpha2)) return speed / 100 * 0.4f;
-        if (Input.GetKey(KeyCode.Alpha3)) return speed / 100 * 0.6f;
-        if (Input.GetKey(KeyCode.Alpha4)) return speed / 100 * 0.8f;
-        if (Input.GetKey(KeyCode.Alpha5)) return speed / 100;
+        var emission = ps.emission;
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            ManageParticles(_mode, speed, ps, 0.2f);
+            return speed / 100 * 0.2f;
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            ManageParticles(_mode, speed, ps, 0.4f);
+            emission.rateOverTime = 20;
+            return speed / 100 * 0.4f;
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            ManageParticles(_mode, speed, ps, 0.6f);
+            return speed / 100 * 0.6f;
+        }
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            ManageParticles(_mode, speed, ps, 0.8f);
+            return speed / 100 * 0.8f;
+        }
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            ManageParticles(_mode, speed, ps, 1f);
+            return speed / 100;
+        }
+        ManageParticles(_mode, speed, ps, 1f);
         return speed / 100;
     }
+
+    public void ManageParticles(Mode curMode, float speed, ParticleSystem ps, float mult)
+    {
+        var renderer = ps.GetComponent<ParticleSystemRenderer>();
+        var emission = ps.emission;
+
+        switch (curMode)
+        {
+            case Mode.Wind:
+                emission.rateOverTime = 0;
+                renderer.material = windMat;
+                return;
+
+            case Mode.Sun:
+                emission.rateOverTime = 0;
+                renderer.material = dryMat;
+                return;
+
+            case Mode.Rain:
+                emission.rateOverTime = Mathf.Round(speed / 2 * mult) * 10;
+                renderer.material = rainMat;
+                return;
+        }
+        emission.enabled = false;
+    }
+
 
     public void manageBlur(List<GameObject> objectsToBlur, string blurLayer)
     {
