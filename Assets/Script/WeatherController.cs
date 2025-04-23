@@ -77,6 +77,7 @@ public class WeatherController : MonoBehaviour
                 break;
             }
             case Mode.Wind:
+                ManageParticles(_mode, 0f, ps, 0f);
                 return;
         }
     }
@@ -109,7 +110,6 @@ public class WeatherController : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha2))
         {
             ManageParticles(_mode, speed, ps, 0.4f);
-            emission.rateOverTime = 20;
             return speed / 100 * 0.4f;
         }
         if (Input.GetKey(KeyCode.Alpha3))
@@ -134,6 +134,7 @@ public class WeatherController : MonoBehaviour
     public void ManageParticles(Mode curMode, float speed, ParticleSystem ps, float mult)
     {
         var renderer = ps.GetComponent<ParticleSystemRenderer>();
+        if (!renderer.enabled) renderer.enabled = true;
         var emission = ps.emission;
 
         switch (curMode)
