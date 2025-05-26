@@ -4,6 +4,7 @@ using TMPro;
 using Unity.Hierarchy;
 using UnityEngine;
 
+
 public class Timer : MonoBehaviour
 {
     [SerializeField] public GameObject timer;

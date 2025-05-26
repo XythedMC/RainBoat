@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 using System;
+using Unity.VisualScripting;
 using UnityEngine.UIElements;
 
 public class WeatherController : MonoBehaviour
@@ -15,13 +16,17 @@ public class WeatherController : MonoBehaviour
     [SerializeField] private Material rainMat;
     [SerializeField] private Material dryMat;
     [SerializeField] private Material windMat;
+    [SerializeField] public Controller controller;
     public ParticleSystem ps;
     
     [Header("Values")]
     [SerializeField, Range(0, 1)] public float windSpeed;
     [SerializeField, Range(1f, 10f)] public float waterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
     [SerializeField, Range(1f, 10f)] public float waterDownSpeed;
-
+    [NonSerialized] private int WaterValue = 0;
+    [NonSerialized] private int SunValue = 0;
+    [NonSerialized] private int WindValue = 1; // 0 is left, 1 is nothing, 2 is right
+    
     [Header("Locked Modes")]
     [SerializeField] public bool rain;
     [SerializeField] public bool sun;
@@ -41,42 +46,55 @@ public class WeatherController : MonoBehaviour
     private void FixedUpdate()
     {
         _mode = _wheelScript.CurrentMode;
-        WaterControl(_mode);
-        WindControl(_mode);
+        
+        try
+        {
+            WaterValue = controller.lastReceivedMessage[2] - '0';
+            SunValue = controller.lastReceivedMessage[6] - '0';
+            WindValue = controller.lastReceivedMessage[10] - '0';
+        }
+        catch (Exception e)
+        {
+            WaterValue = 0;
+            SunValue = 0;
+            WindValue = 1;
+            if (e.GetType() != typeof(NullReferenceException))
+                Debug.LogError(e.Message);
+        }
+        
+        Weather(_mode);
     }
 
-    private void WindControl(Mode curMode)
-    {
-        if (curMode != Mode.Wind) return;
-        if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.RightArrow))
-            _rb2dBoat.AddForceX(windSpeed, ForceMode2D.Impulse);
-        else if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftArrow))
-            _rb2dBoat.AddForceX(-windSpeed, ForceMode2D.Impulse);
-    }
-
-    private void WaterControl(Mode curMode)
+    private void Weather(Mode curMode)
     {
         switch (curMode)
         {
             case Mode.Rain:
             {
-                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
+                if (Input.GetMouseButton(0)  || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5) 
+                    || WaterValue == 1 || WaterValue == 2 || WaterValue == 3 || WaterValue == 4 || WaterValue == 5)
                 {
+                    //Debug.Log(WindValue);
                     if (water.transform.position.y < -1f && CanGoHigher())
-                        water.transform.position += new Vector3(0, FindWaterSpeed(waterUpSpeed, ps));
+                        water.transform.position += new Vector3(0, FindWaterSpeed(WaterValue, waterUpSpeed, ps));
                 }
                 break;
             }
             case Mode.Sun:
             {
-                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5))
+                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5)
+                    || SunValue == 1 || SunValue == 2 || SunValue == 3 || SunValue == 4 || SunValue == 5)
                 {
                     if (water.transform.position.y > -10f)
-                        water.transform.position -= new Vector3(0, FindWaterSpeed(waterDownSpeed, ps));
+                        water.transform.position -= new Vector3(0, FindWaterSpeed(SunValue, waterDownSpeed, ps));
                 }
                 break;
             }
             case Mode.Wind:
+                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.RightArrow) || WindValue == 2)
+                    _rb2dBoat.AddForceX(windSpeed, ForceMode2D.Impulse);
+                else if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftArrow) || WindValue == 0)
+                    _rb2dBoat.AddForceX(-windSpeed, ForceMode2D.Impulse);
                 ManageParticles(_mode, 0f, ps, 0f);
                 return;
         }
@@ -99,36 +117,35 @@ public class WeatherController : MonoBehaviour
         return true;
     }
 
-    private float FindWaterSpeed(float speed, ParticleSystem ps)
+    private float FindWaterSpeed(int message, float speed, ParticleSystem particleSystem)
     {
-        var emission = ps.emission;
-        if (Input.GetKey(KeyCode.Alpha1))
+        if (Input.GetKey(KeyCode.Alpha1) || message == 1)
         {
-            ManageParticles(_mode, speed, ps, 0.2f);
+            ManageParticles(_mode, speed, particleSystem, 0.2f);
             return speed / 100 * 0.2f;
         }
-        if (Input.GetKey(KeyCode.Alpha2))
+        if (Input.GetKey(KeyCode.Alpha2) || message == 2)
         {
-            ManageParticles(_mode, speed, ps, 0.4f);
+            ManageParticles(_mode, speed, particleSystem, 0.4f);
             return speed / 100 * 0.4f;
         }
-        if (Input.GetKey(KeyCode.Alpha3))
+        if (Input.GetKey(KeyCode.Alpha3) || message == 3)
         {
-            ManageParticles(_mode, speed, ps, 0.6f);
+            ManageParticles(_mode, speed, particleSystem, 0.6f);
             return speed / 100 * 0.6f;
         }
-        if (Input.GetKey(KeyCode.Alpha4))
+        if (Input.GetKey(KeyCode.Alpha4) || message == 4)
         {
-            ManageParticles(_mode, speed, ps, 0.8f);
+            ManageParticles(_mode, speed, particleSystem, 0.8f);
             return speed / 100 * 0.8f;
         }
-        if (Input.GetKey(KeyCode.Alpha5))
+        if (Input.GetKey(KeyCode.Alpha5) || message == 5)
         {
-            ManageParticles(_mode, speed, ps, 1f);
+            ManageParticles(_mode, speed, particleSystem, 1f);
             return speed / 100;
         }
-        ManageParticles(_mode, speed, ps, 1f);
-        return speed / 100;
+
+        return 0;
     }
 
     public void ManageParticles(Mode curMode, float speed, ParticleSystem ps, float mult)

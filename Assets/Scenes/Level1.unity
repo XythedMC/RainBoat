@@ -2213,6 +2213,7 @@ GameObject:
   - component: {fileID: 1396895748}
   - component: {fileID: 1396895749}
   - component: {fileID: 1396895750}
+  - component: {fileID: 1396895751}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameController
@@ -2291,6 +2292,7 @@ MonoBehaviour:
   rainMat: {fileID: 2100000, guid: 598a01c758d1a2a4483f2778b7a646d1, type: 2}
   dryMat: {fileID: 0}
   windMat: {fileID: 0}
+  controller: {fileID: 1396895751}
   ps: {fileID: 1854006443}
   windSpeed: 0.65
   waterUpSpeed: 6.96
@@ -2311,6 +2313,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pInput: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+--- !u!114 &1396895751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396895743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3009d1dfd1f9e503b92665077e0582fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portName: /dev/ttyACM0
+  baudRate: 115200
+  parity: 0
+  dataBits: 8
+  stopBits: 1
+  readTimeout: 500
+  lastReceivedMessage: 
 --- !u!1 &1621180489
 GameObject:
   m_ObjectHideFlags: 0
@@ -2461,7 +2482,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0619936, y: -0.04130411}
   m_SpriteTilingProperty:
     border: {x: 0.38, y: 0.35, z: 0.35999998, w: 0.06}
     pivot: {x: 0.5, y: 0.5}
@@ -2471,7 +2492,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.5, y: 1.5}
+  m_Size: {x: 4.269065, y: 4.391288}
   m_EdgeRadius: 0
 --- !u!1 &1634032068
 GameObject:
