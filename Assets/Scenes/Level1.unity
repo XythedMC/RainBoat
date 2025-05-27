@@ -2288,15 +2288,14 @@ MonoBehaviour:
   - {fileID: 446587981}
   - {fileID: 1020263877}
   - {fileID: 321412769}
-  - {fileID: 0}
   rainMat: {fileID: 2100000, guid: 598a01c758d1a2a4483f2778b7a646d1, type: 2}
   dryMat: {fileID: 0}
   windMat: {fileID: 0}
   controller: {fileID: 1396895751}
   ps: {fileID: 1854006443}
-  windSpeed: 0.65
-  waterUpSpeed: 6.96
-  waterDownSpeed: 5.32
+  windSpeed: 0.25
+  waterUpSpeed: 2.7
+  waterDownSpeed: 3
   rain: 1
   sun: 1
   wind: 1
