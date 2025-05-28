@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 public class WheelScript : MonoBehaviour
 {
-    [NonSerialized] public Mode CurrentMode;
+    public Mode CurrentMode;
     private int _currentModeIndex;
     [FormerlySerializedAs("GameManager")] [SerializeField] public GameObject gameManager;
     private readonly List<Mode> _lockModes = new();

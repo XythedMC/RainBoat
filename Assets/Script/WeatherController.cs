@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 using System;
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
+using System.Collections;
 
 public class WeatherController : MonoBehaviour
 {
@@ -18,14 +19,15 @@ public class WeatherController : MonoBehaviour
     [SerializeField] private Material windMat;
     [SerializeField] public Controller controller;
     public ParticleSystem ps;
-    
+
     [Header("Values")]
     [SerializeField, Range(0, 1)] public float windSpeed;
     [SerializeField, Range(1f, 10f)] public float waterUpSpeed; // NEED TO DIVIDE VALUE BY 1000
     [SerializeField, Range(1f, 10f)] public float waterDownSpeed;
-    [NonSerialized] private int WaterValue = 0;
-    [NonSerialized] private int SunValue = 0;
-    [NonSerialized] private int WindValue = 1; // 0 is left, 1 is nothing, 2 is right
+
+    public int[] values = new int[3] {0,0,1};
+    public int[] prevValues = new int[3];
+    public float updateTimer = 0f;
     
     [Header("Locked Modes")]
     [SerializeField] public bool rain;
@@ -38,6 +40,7 @@ public class WeatherController : MonoBehaviour
 
     private void Start()
     {
+        Array.Copy(values, prevValues, 3);
         _wheelScript = wheel.GetComponent<WheelScript>();
         _mode = _wheelScript.CurrentMode;
         _rb2dBoat = boat.GetComponent<Rigidbody2D>();
@@ -45,23 +48,40 @@ public class WeatherController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _mode = _wheelScript.CurrentMode;
+        Debug.Log(string.Join("", prevValues) + " " + string.Join("", values));
+        updateTimer += Time.fixedDeltaTime;
+        if (updateTimer > 4.0f)
+        {
+            Array.Copy(values, prevValues, 3);
+            updateTimer = 0f;
+        }
         
         try
         {
-            WaterValue = controller.lastReceivedMessage[2] - '0';
-            SunValue = controller.lastReceivedMessage[6] - '0';
-            WindValue = controller.lastReceivedMessage[10] - '0';
+            values[0] = controller.lastReceivedMessage[2] - '0';
+            values[1] = controller.lastReceivedMessage[6] - '0';
+            values[2] = controller.lastReceivedMessage[10] - '0';
         }
         catch (Exception e)
         {
-            WaterValue = 0;
-            SunValue = 0;
-            WindValue = 1;
+            values[0] = 0;
+            values[1] = 0;
+            values[2] = 1;
             if (e.GetType() != typeof(NullReferenceException))
                 Debug.LogError(e.Message);
         }
-        
+        if (values != prevValues)
+        {
+            if (values[0] != prevValues[0])
+                _wheelScript.CurrentMode = Mode.Rain;
+            else if (values[1] != prevValues[1])
+                _wheelScript.CurrentMode = Mode.Sun;
+            else if (values[2] != prevValues[2])
+                _wheelScript.CurrentMode = Mode.Wind;
+        }
+            
+        _mode = _wheelScript.CurrentMode;
+
         Weather(_mode);
     }
 
@@ -72,28 +92,28 @@ public class WeatherController : MonoBehaviour
             case Mode.Rain:
             {
                 if (Input.GetMouseButton(0)  || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5) 
-                    || WaterValue == 1 || WaterValue == 2 || WaterValue == 3 || WaterValue == 4 || WaterValue == 5)
+                    || values[0] == 1 || values[0] == 2 || values[0] == 3 || values[0] == 4 || values[0] == 5)
                 {
                     //Debug.Log(WindValue);
                     if (water.transform.position.y < -1f && CanGoHigher())
-                        water.transform.position += new Vector3(0, FindWaterSpeed(WaterValue, waterUpSpeed, ps));
+                        water.transform.position += new Vector3(0, FindWaterSpeed(values[0], waterUpSpeed, ps));
                 }
                 break;
             }
             case Mode.Sun:
             {
                 if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Alpha5)
-                    || SunValue == 1 || SunValue == 2 || SunValue == 3 || SunValue == 4 || SunValue == 5)
+                    || values[1] == 1 || values[1] == 2 || values[1] == 3 || values[1] == 4 || values[1] == 5)
                 {
                     if (water.transform.position.y > -10f)
-                        water.transform.position -= new Vector3(0, FindWaterSpeed(SunValue, waterDownSpeed, ps));
+                        water.transform.position -= new Vector3(0, FindWaterSpeed(values[1], waterDownSpeed, ps));
                 }
                 break;
             }
             case Mode.Wind:
-                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.RightArrow) || WindValue == 2)
+                if (Input.GetMouseButton(0) || Input.GetKey(KeyCode.RightArrow) || values[2] == 2)
                     _rb2dBoat.AddForceX(windSpeed, ForceMode2D.Impulse);
-                else if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftArrow) || WindValue == 0)
+                else if (Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftArrow) || values[2] == 0)
                     _rb2dBoat.AddForceX(-windSpeed, ForceMode2D.Impulse);
                 ManageParticles(_mode, 0f, ps, 0f);
                 return;

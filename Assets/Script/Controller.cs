@@ -17,6 +17,7 @@ public class Controller : MonoBehaviour
     // --- Internal Variables ---
     private SerialPort serialPort;
     private Thread readThread;
+    private ManualResetEvent threadStoppedEvent = new ManualResetEvent(false);
     private bool isRunning = false;
     private ConcurrentQueue<string> receivedDataQueue = new ConcurrentQueue<string>(); // Thread-safe queue for incoming data
     public string lastReceivedMessage = ""; // The string variable to store the latest message
@@ -43,6 +44,7 @@ public class Controller : MonoBehaviour
 
     void OnApplicationQuit()
     {
+        Debug.LogWarning("OnApplicationQuit called, closing port.");
         CloseSerialPort();
     }
 
@@ -50,6 +52,7 @@ public class Controller : MonoBehaviour
 
     public void OpenSerialPort()
     {
+        Debug.LogWarning(serialPort != null && serialPort.IsOpen ? "Open" : "Closed");
         if (serialPort != null && serialPort.IsOpen)
         {
             Debug.LogWarning("Serial port is already open.");
@@ -81,18 +84,36 @@ public class Controller : MonoBehaviour
     {
         if (serialPort != null && serialPort.IsOpen)
         {
-            isRunning = false;
+            isRunning = false; // Signal the reading thread to stop
+
+            // Wait for the thread to signal it has stopped
             if (readThread != null && readThread.IsAlive)
             {
-                readThread.Join(1000); // Wait for the thread to finish (with a timeout)
-                if (readThread.IsAlive)
+                // Wait indefinitely for the thread to stop.
+                // In OnApplicationQuit, you generally want to ensure cleanup.
+                // If it hangs here, it means your thread isn't responding correctly.
+                if (!threadStoppedEvent.WaitOne(5000)) // Wait up to 5 seconds
                 {
-                    readThread.Abort(); // Force terminate if it doesn't close gracefully
+                    Debug.LogWarning("Serial read thread did not signal completion within timeout.");
+                    // If it really doesn't stop, you might be stuck,
+                    // but avoid Abort unless absolutely necessary.
+                    // At this point, the OS might still hold the port.
                 }
+                readThread = null; // Clear reference after joining/waiting
             }
-            serialPort.Close();
-            serialPort.Dispose();
-            Debug.Log("Serial port closed.");
+
+            // Now, attempt to close the serial port
+            try
+            {
+                serialPort.Close();
+                serialPort.Dispose();
+                serialPort = null;
+                Debug.Log("Serial port closed.");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error closing serial port {portName}: {e.Message}");
+            }
         }
     }
 
