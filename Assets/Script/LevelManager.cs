@@ -12,6 +12,11 @@ public class LevelManager : MonoBehaviour
     {
         gameManager = GetComponent<WeatherController>();
         enableChildren(levels[currentLevel], true);
+        foreach (GameObject level in levels)
+        {
+            if (level != levels[currentLevel])
+                enableChildren(level, false);
+        }
     }
 
     public void enableChildren(GameObject parent, bool value)
@@ -22,6 +27,8 @@ public class LevelManager : MonoBehaviour
             parent.transform.GetChild(i).gameObject.SetActive(value);
         }
     }
+
+   
 
     public void setObjectsToBlur()
     {

@@ -9,7 +9,7 @@ public class WheelScript : MonoBehaviour
 {
     public Mode CurrentMode;
     private int _currentModeIndex;
-    [FormerlySerializedAs("GameManager")] [SerializeField] public GameObject gameManager;
+    [SerializeField] public GameObject gameManager;
     private readonly List<Mode> _lockModes = new();
     private WeatherController _wc;
 

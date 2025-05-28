@@ -56,20 +56,24 @@ public class WeatherController : MonoBehaviour
             updateTimer = 0f;
         }
         
-        try
+        if (controller.lastReceivedMessage != "")
         {
-            values[0] = controller.lastReceivedMessage[2] - '0';
-            values[1] = controller.lastReceivedMessage[6] - '0';
-            values[2] = controller.lastReceivedMessage[10] - '0';
+            try
+            {
+                values[0] = controller.lastReceivedMessage[2] - '0';
+                values[1] = controller.lastReceivedMessage[6] - '0';
+                values[2] = controller.lastReceivedMessage[10] - '0';
+            }
+            catch (Exception e)
+            {
+                values[0] = 0;
+                values[1] = 0;
+                values[2] = 1;
+                if (e.GetType() != typeof(NullReferenceException))
+                    Debug.LogError(e.Message);
+            }
         }
-        catch (Exception e)
-        {
-            values[0] = 0;
-            values[1] = 0;
-            values[2] = 1;
-            if (e.GetType() != typeof(NullReferenceException))
-                Debug.LogError(e.Message);
-        }
+        
         if (values != prevValues)
         {
             if (values[0] != prevValues[0])
